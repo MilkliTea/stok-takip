@@ -39,9 +39,9 @@ class StockService
         return [
             'status' => Response::HTTP_CREATED,
             'message' => 'Depodaki ürün adeti güncellendi',
-            'Ürün Adı' => $stockStorageProduct->getProduct()->getName(),
-            'Depo Adı' => $stockStorageProduct->getStorage()->getName(),
-            'Adet' => $stockStorageProduct->getQuantity(),
+            'product_name' => $stockStorageProduct->getProduct()->getName(),
+            'storage_name' => $stockStorageProduct->getStorage()->getName(),
+            'quantity' => $stockStorageProduct->getQuantity(),
         ];
     }
 }

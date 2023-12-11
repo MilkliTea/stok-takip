@@ -23,17 +23,13 @@ use Doctrine\ORM\Mapping as ORM;
         name: 'update-stock',
     ),
     new Get()
-]
+],formats: ['json' => ['application/json']]
 )]
 class StockStorageProduct
 {
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    #[ORM\Id]
-    private ?int $id = null;
-
     #[ORM\ManyToOne(inversedBy: 'stockStorageProducts')]
     #[ORM\JoinColumn(nullable: false)]
+    #[ORM\Id]
     #[ApiProperty(description: 'Ürün adı', jsonSchemaContext: ['type' => 'array',
         'items' => ['name' => 'string',]
     ])]
@@ -41,18 +37,13 @@ class StockStorageProduct
 
     #[ORM\ManyToOne(inversedBy: 'stockStorageProducts')]
     #[ORM\JoinColumn(nullable: false)]
+    #[ORM\Id]
     #[ApiProperty(description: 'Depo adı')]
     private ?Storage $storage = null;
 
     #[ORM\Column]
     #[ApiProperty(description: 'Stok Adeti')]
     private ?int $quantity = null;
-
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
 
     public function getProduct(): ?Product
     {

@@ -10,7 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-#[ApiResource(description: 'Ürün')]
+#[ApiResource(description: 'Ürün', formats: ['json' => ['application/json']])]
 class Product
 {
     #[ORM\Id]
@@ -30,7 +30,7 @@ class Product
     private ?bool $status = true;
 
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: StockStorageProduct::class)]
-    #[ApiProperty(writable: false)]
+    #[ApiProperty(readable: false, writable: false, default: null)]
     private Collection $stockStorageProducts;
 
     public function __construct()

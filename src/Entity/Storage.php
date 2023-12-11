@@ -4,13 +4,35 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Tests\Fixtures\Metadata\Get;
+use App\Controller\StorageController;
 use App\Repository\StorageRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: StorageRepository::class)]
-#[ApiResource(description: 'Depo oluşturmak için kullanılır.')]
+#[ApiResource(description: 'Depo oluşturmak için kullanılır.', operations: [
+    new Get(
+        uriTemplate: '/storage/{code}',
+        uriVariables: 'code',
+        controller: StorageController::class,
+        name: 'storage',
+    ),
+    new Post(),
+    new Patch(),
+    new GetCollection(
+        uriTemplate: '/storages',
+        controller: StorageController::class,
+        name: 'storage-list',
+    ),
+    new Delete(),
+], formats: ['json' => ['application/json']]
+)]
 class Storage
 {
     #[ORM\Id]
@@ -90,5 +112,15 @@ class Storage
         }
 
         return $this;
+    }
+
+    public function getProducts()
+    {
+        return array_map(function ($storageProduct) {
+            return [
+                'name' => $storageProduct->getProduct()->getName(),
+                'quantity' => $storageProduct->getQuantity()
+            ];
+        }, $this->getStockStorageProducts()->toArray());
     }
 }

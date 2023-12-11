@@ -13,7 +13,7 @@ class StockService
 {
 
     public function __construct(private StockStorageProductRepository $stockStorageProductRepository,
-                                private StorageRepository             $storageRepository,
+                                private StorageService             $storageService,
                                 private ProductRepository             $productRepository,
     )
     {
@@ -21,14 +21,14 @@ class StockService
 
     public function updateStock(string $storageCode, string $productName, int $quantity): array
     {
-        $storage = $this->storageRepository->findOneBy([
-            'code' => $storageCode
-        ]);
+        $storage = $this->storageService->getStorageByCode($storageCode);
 
         if (!$storage) {
             return [
+                'data' => [
+                    'message' => 'Hatalı Depo Kodu lütfen kontrol ediniz.',
+                ],
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'Hatalı Depo Kodu lütfen kontrol ediniz.',
             ];
         }
 
@@ -37,11 +37,12 @@ class StockService
         $stockStorageProduct = $this->stockStorageProductRepository->add($storage, $product, $quantity);
 
         return [
+            'data' => [
+                'product_name' => $stockStorageProduct->getProduct()->getName(),
+                'storage_name' => $stockStorageProduct->getStorage()->getName(),
+                'quantity' => $stockStorageProduct->getQuantity(),
+            ],
             'status' => Response::HTTP_CREATED,
-            'message' => 'Depodaki ürün adeti güncellendi',
-            'product_name' => $stockStorageProduct->getProduct()->getName(),
-            'storage_name' => $stockStorageProduct->getStorage()->getName(),
-            'quantity' => $stockStorageProduct->getQuantity(),
         ];
     }
 }

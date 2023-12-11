@@ -19,7 +19,7 @@ class StorageController extends AbstractController
                 'id' => $storage->getId(),
                 'name' => $storage->getName(),
                 'code' => $storage->getCode(),
-                'products' => $storage->getProducts()
+                'products' => $storage->getProducts(),
             ];
         }, $storageRepository->findAll());
 
@@ -31,9 +31,9 @@ class StorageController extends AbstractController
     {
         $storage = $storageService->getStorageByCode($code);
 
-        if ($storage === null) {
+        if (null === $storage) {
             return new JsonResponse([
-                'message' => 'Depo Bulunamadı'
+                'message' => 'Depo Bulunamadı',
             ],
                 Response::HTTP_NOT_FOUND
             );
@@ -43,9 +43,8 @@ class StorageController extends AbstractController
             'data' => [
                 'name' => $storage->getName(),
                 'code' => $storage->getCode(),
-                'products' => $storage->getProducts()
-            ]
+                'products' => $storage->getProducts(),
+            ],
         ], Response::HTTP_OK);
     }
-
 }

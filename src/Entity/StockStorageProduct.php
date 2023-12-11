@@ -5,7 +5,6 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use App\Controller\StockStorageProductController;
 use App\Repository\StockStorageProductRepository;
@@ -24,7 +23,7 @@ use Doctrine\ORM\Mapping as ORM;
         controller: StockStorageProductController::class,
         description: 'Stok Kontrol',
         name: 'check-stock'
-    )
+    ),
 ], formats: ['json' => ['application/json']]
 )]
 class StockStorageProduct

@@ -6,8 +6,8 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Tests\Fixtures\Metadata\Get;
 use App\Controller\StorageController;
 use App\Repository\StorageRepository;
@@ -121,7 +121,7 @@ class Storage
             return [
                 'id' => $storageProduct->getProduct()->getId(),
                 'name' => $storageProduct->getProduct()->getName(),
-                'quantity' => $storageProduct->getQuantity()
+                'quantity' => $storageProduct->getQuantity(),
             ];
         }, $this->getStockStorageProducts()->toArray());
     }

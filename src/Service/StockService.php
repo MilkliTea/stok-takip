@@ -9,11 +9,9 @@ use App\Repository\StockStorageProductRepository;
 
 class StockService
 {
-
     public function __construct(private StockStorageProductRepository $stockStorageProductRepository,
-                                private ProductRepository             $productRepository,
-    )
-    {
+        private ProductRepository $productRepository,
+    ) {
     }
 
     public function addStock(Storage $storage, string $productName, int $quantity): array

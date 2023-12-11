@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-
 use App\Repository\ProductRepository;
 use App\Service\StockService;
 use App\Service\StorageService;
@@ -14,7 +13,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class StockStorageProductController extends AbstractController
 {
-
     public function __construct(public StockService $stockService, public StorageService $storageService, public ProductRepository $productRepository)
     {
     }
@@ -62,7 +60,7 @@ class StockStorageProductController extends AbstractController
         }
 
         $product = $this->productRepository->findOneBy([
-            'name' => $productName
+            'name' => $productName,
         ]);
 
         if (!$product) {
@@ -73,17 +71,16 @@ class StockStorageProductController extends AbstractController
             ], Response::HTTP_NOT_FOUND);
         }
 
-
         $result = $this->stockService->checkStock(
             $storage,
             $product
         );
 
-        if ($result === null) {
+        if (null === $result) {
             return new JsonResponse([
                 'data' => [
-                    'message' => $storage->getName() . 'deposunda ' . $product->getName() . ' ürünü bulunamadı.'
-                ]
+                    'message' => $storage->getName().'deposunda '.$product->getName().' ürünü bulunamadı.',
+                ],
             ], Response::HTTP_NOT_FOUND);
         }
 
@@ -91,6 +88,4 @@ class StockStorageProductController extends AbstractController
             'data' => $result,
         ], Response::HTTP_CREATED);
     }
-
-
 }

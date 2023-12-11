@@ -14,35 +14,35 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: StockStorageProductRepository::class)]
 #[ApiResource(operations: [
     new Post(
-        uriTemplate: '/stock-storage-product/update-stock',
-        uriVariables: [
-            'storageCode', 'productName', 'quantity'
-        ],
+        uriTemplate: '/api/stock',
         controller: StockStorageProductController::class,
-        description: 'Stok giriş ve Güncelleme',
-        name: 'update-stock',
+        description: 'Stok Giriş',
+        name: 'add-stock',
     ),
-    new Get()
-],formats: ['json' => ['application/json']]
+    new Get(
+        uriTemplate: '/api/stock{storageCode}/{productName}',
+        controller: StockStorageProductController::class,
+        description: 'Stok Kontrol',
+        name: 'check-stock'
+    )
+], formats: ['json' => ['application/json']]
 )]
 class StockStorageProduct
 {
     #[ORM\ManyToOne(inversedBy: 'stockStorageProducts')]
     #[ORM\JoinColumn(nullable: false)]
     #[ORM\Id]
-    #[ApiProperty(description: 'Ürün adı', jsonSchemaContext: ['type' => 'array',
-        'items' => ['name' => 'string',]
-    ])]
+    #[ApiProperty(description: 'Ürün adı', schema: ['type' => 'string', 'example' => 'kalem'])]
     private ?Product $product = null;
 
     #[ORM\ManyToOne(inversedBy: 'stockStorageProducts')]
     #[ORM\JoinColumn(nullable: false)]
     #[ORM\Id]
-    #[ApiProperty(description: 'Depo adı')]
+    #[ApiProperty(description: 'Depo adı', schema: ['type' => 'string', 'example' => 'KA1'])]
     private ?Storage $storage = null;
 
     #[ORM\Column]
-    #[ApiProperty(description: 'Stok Adeti')]
+    #[ApiProperty(description: 'Stok Adeti', schema: ['type' => 'integer', 'example' => '5'])]
     private ?int $quantity = null;
 
     public function getProduct(): ?Product

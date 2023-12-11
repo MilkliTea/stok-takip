@@ -11,8 +11,23 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class StorageController extends AbstractController
 {
-    #[Route('api/storage/{code}', name: 'storage', methods: 'GET')]
-    public function index($code, StorageService $storageService): JsonResponse
+    #[Route('api/storages', name: 'api_storages_index', methods: 'GET')]
+    public function index(StorageRepository $storageRepository): JsonResponse
+    {
+        $storages = array_map(function ($storage) {
+            return [
+                'id' => $storage->getId(),
+                'name' => $storage->getName(),
+                'code' => $storage->getCode(),
+                'products' => $storage->getProducts()
+            ];
+        }, $storageRepository->findAll());
+
+        return new JsonResponse(['data' => $storages]);
+    }
+
+    #[Route('api/storage/{code}', name: 'api_storage_show', methods: 'GET')]
+    public function show($code, StorageService $storageService): JsonResponse
     {
         $storage = $storageService->getStorageByCode($code);
 
@@ -32,21 +47,5 @@ class StorageController extends AbstractController
             ]
         ], Response::HTTP_OK);
     }
-
-    #[Route('api/storages', name: 'storage-list', methods: 'GET')]
-    public function list(StorageRepository $storageRepository): JsonResponse
-    {
-        $storages = array_map(function ($storage) {
-            return [
-                'id' => $storage->getId(),
-                'name' => $storage->getName(),
-                'code' => $storage->getCode(),
-                'products' => $storage->getProducts()
-            ];
-        }, $storageRepository->findAll());
-
-        return new JsonResponse(['data' => $storages]);
-    }
-
 
 }

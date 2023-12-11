@@ -3,46 +3,47 @@
 namespace App\Service;
 
 use App\Entity\Product;
+use App\Entity\Storage;
 use App\Repository\ProductRepository;
 use App\Repository\StockStorageProductRepository;
-use App\Repository\StorageRepository;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 
 class StockService
 {
 
     public function __construct(private StockStorageProductRepository $stockStorageProductRepository,
-                                private StorageService             $storageService,
                                 private ProductRepository             $productRepository,
     )
     {
     }
 
-    public function updateStock(string $storageCode, string $productName, int $quantity): array
+    public function addStock(Storage $storage, string $productName, int $quantity): array
     {
-        $storage = $this->storageService->getStorageByCode($storageCode);
-
-        if (!$storage) {
-            return [
-                'data' => [
-                    'message' => 'Hatalı Depo Kodu lütfen kontrol ediniz.',
-                ],
-                'status' => Response::HTTP_NOT_FOUND,
-            ];
-        }
-
         $product = $this->productRepository->getProduct($productName);
 
         $stockStorageProduct = $this->stockStorageProductRepository->add($storage, $product, $quantity);
 
         return [
-            'data' => [
-                'product_name' => $stockStorageProduct->getProduct()->getName(),
-                'storage_name' => $stockStorageProduct->getStorage()->getName(),
-                'quantity' => $stockStorageProduct->getQuantity(),
-            ],
-            'status' => Response::HTTP_CREATED,
+            'product_name' => $stockStorageProduct->getProduct()->getName(),
+            'storage_name' => $stockStorageProduct->getStorage()->getName(),
+            'quantity' => $stockStorageProduct->getQuantity(),
+        ];
+    }
+
+    public function checkStock(Storage $storage, Product $product): ?array
+    {
+        $stockStorageProduct = $this->stockStorageProductRepository->findOneBy([
+            'storage' => $storage,
+            'product' => $product,
+        ]);
+
+        if (!$stockStorageProduct) {
+            return null;
+        }
+
+        return [
+            'product_name' => $stockStorageProduct->getProduct()->getName(),
+            'storage_name' => $stockStorageProduct->getStorage()->getName(),
+            'quantity' => $stockStorageProduct->getQuantity(),
         ];
     }
 }

@@ -16,19 +16,20 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: StorageRepository::class)]
-#[ApiResource(description: 'Depo oluşturmak için kullanılır.', operations: [
+#[ApiResource(description: 'Depo oluşturmak için kullanılır.',
+    operations: [
     new Get(
         uriTemplate: '/storage/{code}',
         uriVariables: 'code',
         controller: StorageController::class,
-        name: 'storage',
+        name: 'api_storage_show',
     ),
     new Post(),
     new Patch(),
     new GetCollection(
         uriTemplate: '/storages',
         controller: StorageController::class,
-        name: 'storage-list',
+        name: 'api_storages_index',
     ),
     new Delete(),
 ], formats: ['json' => ['application/json']]
@@ -47,7 +48,7 @@ class Storage
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'storage', targetEntity: StockStorageProduct::class)]
-    #[ApiProperty(writable: false)]
+    #[ApiProperty(readable: false, writable: false, default: null)]
     private Collection $stockStorageProducts;
 
     public function __construct()

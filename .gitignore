@@ -10,3 +10,4 @@
 /.env
 ###< symfony/framework-bundle ###
 /.idea
+.idea

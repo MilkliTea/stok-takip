@@ -118,7 +118,7 @@ class Storage
     {
         return array_map(function ($storageProduct) {
             return [
-                'id' => $storageProduct->getProduct()->getName(),
+                'id' => $storageProduct->getProduct()->getId(),
                 'name' => $storageProduct->getProduct()->getName(),
                 'quantity' => $storageProduct->getQuantity()
             ];

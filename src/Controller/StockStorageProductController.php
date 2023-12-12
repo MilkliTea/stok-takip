@@ -26,9 +26,7 @@ class StockStorageProductController extends AbstractController
 
         if (!$storage) {
             return new JsonResponse([
-                'data' => [
-                    'message' => 'Hatalı Depo Kodu lütfen kontrol ediniz.',
-                ],
+                'message' => 'Hatalı Depo Kodu lütfen kontrol ediniz.',
             ], Response::HTTP_NOT_FOUND);
         }
 
@@ -39,7 +37,7 @@ class StockStorageProductController extends AbstractController
         );
 
         return new JsonResponse([
-            'data' => $result,
+            $result,
         ], Response::HTTP_CREATED);
     }
 
@@ -53,9 +51,7 @@ class StockStorageProductController extends AbstractController
 
         if (!$storage) {
             return new JsonResponse([
-                'data' => [
-                    'message' => 'Hatalı Depo Kodu lütfen kontrol ediniz.',
-                ],
+                 'message' => 'Hatalı Depo Kodu lütfen kontrol ediniz.',
             ], Response::HTTP_NOT_FOUND);
         }
 
@@ -65,9 +61,7 @@ class StockStorageProductController extends AbstractController
 
         if (!$product) {
             return new JsonResponse([
-                'data' => [
-                    'message' => 'Ürün Bulunamadı.',
-                ],
+                'message' => 'Ürün Bulunamadı.',
             ], Response::HTTP_NOT_FOUND);
         }
 
@@ -78,14 +72,12 @@ class StockStorageProductController extends AbstractController
 
         if (null === $result) {
             return new JsonResponse([
-                'data' => [
-                    'message' => $storage->getName().'deposunda '.$product->getName().' ürünü bulunamadı.',
-                ],
+               'message' => $storage->getName().'deposunda '.$product->getName().' ürünü bulunamadı.',
             ], Response::HTTP_NOT_FOUND);
         }
 
         return new JsonResponse([
-            'data' => $result,
+            $result,
         ], Response::HTTP_CREATED);
     }
 }

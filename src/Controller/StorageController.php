@@ -23,7 +23,10 @@ class StorageController extends AbstractController
             ];
         }, $storageRepository->findAll());
 
-        return new JsonResponse(['data' => $storages]);
+        return new JsonResponse(
+            $storages,
+            Response::HTTP_OK
+        );
     }
 
     #[Route('api/storage/{code}', name: 'api_storage_show', methods: 'GET')]
@@ -40,11 +43,9 @@ class StorageController extends AbstractController
         }
 
         return new JsonResponse([
-            'data' => [
                 'name' => $storage->getName(),
                 'code' => $storage->getCode(),
                 'products' => $storage->getProducts(),
-            ],
         ], Response::HTTP_OK);
     }
 }

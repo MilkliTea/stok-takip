@@ -54,12 +54,14 @@ class StockStorageProductRepository extends ServiceEntityRepository
             'storage' => $storage,
             'product' => $product,
         ]);
-        if (!$stockStorageProduct) {
-            $stockStorageProduct = new StockStorageProduct();
-            $stockStorageProduct->setStorage($storage);
-            $stockStorageProduct->setProduct($product);
+
+        if ($stockStorageProduct) {
+            return $stockStorageProduct;
         }
 
+        $stockStorageProduct = new StockStorageProduct();
+        $stockStorageProduct->setStorage($storage);
+        $stockStorageProduct->setProduct($product);
         $stockStorageProduct->setQuantity($quantity);
 
         $this->getEntityManager()->persist($stockStorageProduct);

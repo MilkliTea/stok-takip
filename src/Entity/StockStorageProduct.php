@@ -4,14 +4,17 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Controller\StockStorageProductController;
 use App\Repository\StockStorageProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: StockStorageProductRepository::class)]
-#[ApiResource(operations: [
+#[ApiResource(
+    operations: [
     new Post(
         uriTemplate: '/api/stock',
         controller: StockStorageProductController::class,
@@ -24,7 +27,22 @@ use Doctrine\ORM\Mapping as ORM;
         description: 'Stok Kontrol',
         name: 'check-stock'
     ),
-], formats: ['json' => ['application/json']]
+    new Patch(
+        uriTemplate: 'api/stock/edit/{storageCode}/{productName}',
+        uriVariables: ['storageCode', 'productName'],
+        controller: StockStorageProductController::class,
+        description: 'Stok Güncelleme',
+        name: 'update-stock',
+    ),
+    new Delete(
+        uriTemplate: '/api/stock/delete{storageCode}/{productName}',
+        uriVariables: ['storageCode', 'productName'],
+        controller: StockStorageProductController::class,
+        description: 'Depodan ürün siler',
+        name: 'delete-stock'
+    ),
+],
+    formats: ['json' => ['application/json']]
 )]
 class StockStorageProduct
 {

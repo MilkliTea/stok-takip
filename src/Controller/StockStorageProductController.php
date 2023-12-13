@@ -31,14 +31,15 @@ class StockStorageProductController extends AbstractController
         }
 
         $result = $this->stockService->addStock(
-            $data['storage'],
+            $storage,
             $data['product'],
             $data['quantity']
         );
 
-        return new JsonResponse([
+        return new JsonResponse(
             $result,
-        ], Response::HTTP_CREATED);
+            Response::HTTP_CREATED
+        );
     }
 
     #[Route('/api/stock/{storageCode}/{productName}', name: 'check-stock', methods: 'GET')]
@@ -47,37 +48,65 @@ class StockStorageProductController extends AbstractController
         $storageCode = $request->get('storageCode');
         $productName = $request->get('productName');
 
-        $storage = $this->storageService->getStorageByCode($storageCode);
+        $result = $this->stockService->getStockStorageProduct($storageCode, $productName);
 
-        if (!$storage) {
+        if (Response::HTTP_NOT_FOUND === $result['status']) {
             return new JsonResponse([
-                 'message' => 'Hatalı Depo Kodu lütfen kontrol ediniz.',
+                'message' => $result['message'],
             ], Response::HTTP_NOT_FOUND);
         }
 
-        $product = $this->productRepository->findOneBy([
-            'name' => $productName,
-        ]);
+        $stockStorageProduct = $this->stockService->checkStock($result['data']);
 
-        if (!$product) {
+        if (null === $stockStorageProduct) {
             return new JsonResponse([
-                'message' => 'Ürün Bulunamadı.',
+                'message' => 'Depoda Ürün Bulunamadı.',
             ], Response::HTTP_NOT_FOUND);
         }
 
-        $result = $this->stockService->checkStock(
-            $storage,
-            $product
+        return new JsonResponse(
+            $stockStorageProduct,
+            Response::HTTP_CREATED
         );
+    }
 
-        if (null === $result) {
+    #[Route('/api/stock/edit/{storageCode}/{productName}', name: 'update-stock', methods: 'PATCH')]
+    public function edit(string $storageCode, string $productName, Request $request): JsonResponse
+    {
+        $requestData = json_decode($request->getContent(), true);
+
+        $result = $this->stockService->getStockStorageProduct($storageCode, $productName);
+
+        if (Response::HTTP_NOT_FOUND === $result['status']) {
             return new JsonResponse([
-               'message' => $storage->getName().'deposunda '.$product->getName().' ürünü bulunamadı.',
+                'message' => $result['message'],
             ], Response::HTTP_NOT_FOUND);
         }
 
-        return new JsonResponse([
-            $result,
-        ], Response::HTTP_CREATED);
+        $stockStorageProduct = $this->stockService->updateStock($result['data'], $requestData['quantity']);
+
+        return new JsonResponse(
+            $stockStorageProduct,
+            Response::HTTP_CREATED
+        );
+    }
+
+    #[Route('/api/stock/{storageCode}/{productName}', name: 'delete-stock', methods: 'DELETE')]
+    public function delete(string $storageCode, string $productName): JsonResponse
+    {
+        $result = $this->stockService->getStockStorageProduct($storageCode, $productName);
+
+        if (Response::HTTP_NOT_FOUND === $result['status']) {
+            return new JsonResponse([
+                'message' => $result['message'],
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $this->stockService->deleteStock($result['data']);
+
+        return new JsonResponse(
+            'Ürün Depodan Başarıyla Silindi.',
+            Response::HTTP_OK
+        );
     }
 }

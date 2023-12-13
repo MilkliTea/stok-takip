@@ -2,15 +2,20 @@
 
 namespace App\Service;
 
-use App\Entity\Product;
+use App\Entity\StockStorageProduct;
 use App\Entity\Storage;
 use App\Repository\ProductRepository;
 use App\Repository\StockStorageProductRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class StockService
 {
-    public function __construct(private StockStorageProductRepository $stockStorageProductRepository,
+    public function __construct(
+        private StockStorageProductRepository $stockStorageProductRepository,
         private ProductRepository $productRepository,
+        private StorageService $storageService,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -20,27 +25,85 @@ class StockService
 
         $stockStorageProduct = $this->stockStorageProductRepository->add($storage, $product, $quantity);
 
-        return [
-            'product_name' => $stockStorageProduct->getProduct()->getName(),
-            'storage_name' => $stockStorageProduct->getStorage()->getName(),
-            'quantity' => $stockStorageProduct->getQuantity(),
-        ];
+        return $this->prepareData($stockStorageProduct);
     }
 
-    public function checkStock(Storage $storage, Product $product): ?array
+    public function checkStock(?StockStorageProduct $stockStorageProduct): ?array
     {
+        if (!$stockStorageProduct) {
+            return null;
+        }
+
+        return $this->prepareData($stockStorageProduct);
+    }
+
+    public function updateStock(StockStorageProduct $stockStorageProduct, int $quantity): array
+    {
+        $stockStorageProduct->setQuantity($quantity);
+
+        $this->entityManager->persist($stockStorageProduct);
+        $this->entityManager->flush();
+
+        return $this->prepareData($stockStorageProduct);
+    }
+
+    public function deleteStock(StockStorageProduct $stockStorageProduct): void
+    {
+        $this->entityManager->remove($stockStorageProduct);
+        $this->entityManager->flush();
+
+        return;
+    }
+
+    public function getStockStorageProduct(string $storageCode, string $productName): array
+    {
+        $storage = $this->storageService->getStorageByCode($storageCode);
+
+        if (!$storage) {
+            return [
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Hatalı Depo Kodu lütfen kontrol ediniz.',
+                'data' => null,
+            ];
+        }
+
+        $product = $this->productRepository->findOneBy([
+            'name' => $productName,
+        ]);
+
+        if (!$product) {
+            return [
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Ürün Bulunamadı.',
+                'data' => null,
+            ];
+        }
+
         $stockStorageProduct = $this->stockStorageProductRepository->findOneBy([
             'storage' => $storage,
             'product' => $product,
         ]);
 
-        if (!$stockStorageProduct) {
-            return null;
-        }
-
         return [
-            'product_name' => $stockStorageProduct->getProduct()->getName(),
-            'storage_name' => $stockStorageProduct->getStorage()->getName(),
+            'status' => Response::HTTP_OK,
+            'message' => 'Depoda Ürün Mevcut',
+            'data' => $this->prepareData($stockStorageProduct),
+        ];
+    }
+
+    public function prepareData(StockStorageProduct $stockStorageProduct): array
+    {
+        return [
+            'storage' => [
+                'id' => $stockStorageProduct->getStorage()->getId(),
+                'name' => $stockStorageProduct->getStorage()->getName(),
+                'code' => $stockStorageProduct->getStorage()->getCode(),
+            ],
+            'product' => [
+                'id' => $stockStorageProduct->getProduct()->getId(),
+                'name' => $stockStorageProduct->getProduct()->getName(),
+                'description' => $stockStorageProduct->getProduct()->getDescription(),
+            ],
             'quantity' => $stockStorageProduct->getQuantity(),
         ];
     }

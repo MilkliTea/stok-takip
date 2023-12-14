@@ -24,4 +24,15 @@ class StorageService
 
         return $storage;
     }
+
+    public function getStorageById(int $storageId): ?Storage
+    {
+        $storage = $this->storageRepository->find($storageId);
+
+        if (!$storage) {
+            return null;
+        }
+
+        return $storage;
+    }
 }

@@ -22,21 +22,22 @@ use Doctrine\ORM\Mapping as ORM;
         name: 'add-stock',
     ),
     new Get(
-        uriTemplate: '/api/stock{storageCode}/{productName}',
+        uriTemplate: '/api/stock{storageId}/{productId}',
+        uriVariables: ['storageId', 'productId'],
         controller: StockStorageProductController::class,
         description: 'Stok Kontrol',
         name: 'check-stock'
     ),
     new Patch(
-        uriTemplate: 'api/stock/edit/{storageCode}/{productName}',
-        uriVariables: ['storageCode', 'productName'],
+        uriTemplate: 'api/stock/edit/{storageId}/{productId}',
+        uriVariables: ['storageId', 'productId'],
         controller: StockStorageProductController::class,
         description: 'Stok Güncelleme',
         name: 'update-stock',
     ),
     new Delete(
-        uriTemplate: '/api/stock/delete{storageCode}/{productName}',
-        uriVariables: ['storageCode', 'productName'],
+        uriTemplate: '/api/stock/delete{storageId}/{productId}',
+        uriVariables: ['storageId', 'productId'],
         controller: StockStorageProductController::class,
         description: 'Depodan ürün siler',
         name: 'delete-stock'
@@ -49,18 +50,22 @@ class StockStorageProduct
     #[ORM\ManyToOne(inversedBy: 'stockStorageProducts')]
     #[ORM\JoinColumn(nullable: false)]
     #[ORM\Id]
-    #[ApiProperty(description: 'Ürün adı', schema: ['type' => 'string', 'example' => 'kalem'])]
+    #[ApiProperty(description: 'Ürün adı', readable: false, writable: false, schema: ['type' => 'string', 'example' => 'kalem'])]
     private ?Product $product = null;
-
     #[ORM\ManyToOne(inversedBy: 'stockStorageProducts')]
     #[ORM\JoinColumn(nullable: false)]
     #[ORM\Id]
-    #[ApiProperty(description: 'Depo adı', schema: ['type' => 'string', 'example' => 'KA1'])]
+    #[ApiProperty(description: 'Depo adı', readable: false, writable: false, schema: ['type' => 'string', 'example' => 'KA1'])]
     private ?Storage $storage = null;
 
     #[ORM\Column]
     #[ApiProperty(description: 'Stok Adeti', schema: ['type' => 'integer', 'example' => '5'])]
     private ?int $quantity = null;
+
+    #[ApiProperty(description: 'Ürün id', schema: ['type' => 'int', 'example' => '1'])]
+    private ?int $productId = null;
+    #[ApiProperty(description: 'Depo İd', schema: ['type' => 'int', 'example' => '2'])]
+    private ?int $storageId = null;
 
     public function getProduct(): ?Product
     {
@@ -96,5 +101,15 @@ class StockStorageProduct
         $this->quantity = $quantity;
 
         return $this;
+    }
+
+    public function getProductId(): ?int
+    {
+        return $this->productId;
+    }
+
+    public function getStorageId(): ?int
+    {
+        return $this->storageId;
     }
 }

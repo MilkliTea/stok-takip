@@ -16,11 +16,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: StorageRepository::class)]
-#[ApiResource(description: 'Depo oluşturmak için kullanılır.',
+#[ApiResource(
+    description: 'Depo oluşturmak için kullanılır.',
     operations: [
     new Get(
-        uriTemplate: '/storage/{code}',
-        uriVariables: 'code',
+        uriTemplate: '/storage/{id}',
+        uriVariables: 'id',
         controller: StorageController::class,
         name: 'api_storage_show',
     ),
@@ -32,7 +33,8 @@ use Doctrine\ORM\Mapping as ORM;
         name: 'api_storages_index',
     ),
     new Delete(),
-], formats: ['json' => ['application/json']]
+],
+    formats: ['json' => ['application/json']]
 )]
 class Storage
 {
@@ -115,6 +117,7 @@ class Storage
         return $this;
     }
 
+    #[ApiProperty(readable: false, writable: false, default: null)]
     public function getProducts()
     {
         return array_map(function ($storageProduct) {

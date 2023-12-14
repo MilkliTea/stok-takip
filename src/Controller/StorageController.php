@@ -29,10 +29,10 @@ class StorageController extends AbstractController
         );
     }
 
-    #[Route('api/storage/{code}', name: 'api_storage_show', methods: 'GET')]
-    public function show($code, StorageService $storageService): JsonResponse
+    #[Route('api/storage/{id}', name: 'api_storage_show', methods: 'GET')]
+    public function show(int $id, StorageService $storageService): JsonResponse
     {
-        $storage = $storageService->getStorageByCode($code);
+        $storage = $storageService->getStorageById($id);
 
         if (null === $storage) {
             return new JsonResponse([

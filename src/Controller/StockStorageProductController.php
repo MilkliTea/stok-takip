@@ -53,19 +53,19 @@ class StockStorageProductController extends AbstractController
             ], Response::HTTP_NOT_FOUND);
         }
 
-        $stockStorageProduct = $this->stockService->checkStock(
+        $stockStorageProduct = $this->stockService->getStockStorageProduct(
             $productAndStorageData['storage'],
             $productAndStorageData['product']
         );
 
         if (null === $stockStorageProduct) {
             return new JsonResponse([
-                'message' => 'Depoda Ürün Bulunamadı.',
+                'message' => 'Ürün Depoda Mevcut Değil',
             ], Response::HTTP_NOT_FOUND);
         }
 
         return new JsonResponse(
-            $stockStorageProduct,
+            $this->stockService->prepareData($stockStorageProduct),
             Response::HTTP_CREATED
         );
     }
@@ -83,14 +83,24 @@ class StockStorageProductController extends AbstractController
             ], Response::HTTP_NOT_FOUND);
         }
 
-        $stockStorageProduct = $this->stockService->updateStock(
+        $stockStorageProduct = $this->stockService->getStockStorageProduct(
             $productAndStorageData['storage'],
-            $productAndStorageData['product'],
+            $productAndStorageData['product']
+        );
+
+        if (null === $stockStorageProduct) {
+            return new JsonResponse([
+                'message' => 'Ürün Depoda Mevcut Değil',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $updatedStockStorageProduct = $this->stockService->updateStock(
+            $stockStorageProduct,
             $requestData['quantity']
         );
 
         return new JsonResponse(
-            $stockStorageProduct,
+            $updatedStockStorageProduct,
             Response::HTTP_CREATED
         );
     }
@@ -110,6 +120,12 @@ class StockStorageProductController extends AbstractController
             $productAndStorageData['storage'],
             $productAndStorageData['product']
         );
+
+        if (null === $stockStorageProduct) {
+            return new JsonResponse([
+                'message' => 'Ürün Depoda Mevcut Değil',
+            ], Response::HTTP_NOT_FOUND);
+        }
 
         $this->stockService->deleteStock($stockStorageProduct);
 

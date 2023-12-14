@@ -27,24 +27,8 @@ class StockService
         return $this->prepareData($stockStorageProduct);
     }
 
-    public function checkStock(Storage $storage, Product $product): ?array
+    public function updateStock(StockStorageProduct $stockStorageProduct, int $quantity): array
     {
-        $stockStorageProduct = $this->stockStorageProductRepository->findOneBy([
-            'storage' => $storage,
-            'product' => $product,
-        ]);
-
-        if (!$stockStorageProduct) {
-            return null;
-        }
-
-        return $this->prepareData($stockStorageProduct);
-    }
-
-    public function updateStock(Storage $storage, Product $product, int $quantity): array
-    {
-        $stockStorageProduct = $this->getStockStorageProduct($storage, $product);
-
         $stockStorageProduct->setQuantity($quantity);
 
         $this->entityManager->persist($stockStorageProduct);
@@ -110,7 +94,7 @@ class StockService
         ];
     }
 
-    public function getStockStorageProduct(Storage $storage, Product $product): StockStorageProduct
+    public function getStockStorageProduct(Storage $storage, Product $product): ?StockStorageProduct
     {
         return $this->stockStorageProductRepository->findOneBy([
             'storage' => $storage,

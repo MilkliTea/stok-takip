@@ -59,12 +59,12 @@ class StockStorageProduct
     private ?Storage $storage = null;
 
     #[ORM\Column]
-    #[ApiProperty(description: 'Stok Adeti', schema: ['type' => 'integer', 'example' => '5'])]
+    #[ApiProperty(description: 'Stok Adeti', schema: ['type' => 'integer', 'examples' => [5]])]
     private ?int $quantity = null;
 
-    #[ApiProperty(description: 'Ürün id', schema: ['type' => 'int', 'example' => '1'])]
+    #[ApiProperty(description: 'Ürün id', schema: ['type' => 'integer', 'examples' => [1]])]
     private ?int $productId = null;
-    #[ApiProperty(description: 'Depo İd', schema: ['type' => 'int', 'example' => '2'])]
+    #[ApiProperty(description: 'Depo id', schema: ['type' => 'integer', 'examples' => [3]])]
     private ?int $storageId = null;
 
     public function getProduct(): ?Product

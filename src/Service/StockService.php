@@ -62,16 +62,15 @@ class StockService
         ];
     }
 
-    public function existProductAndStorage(int $storageId, int $productId): array
+    public function getStockStorageProduct(int $storageId, int $productId): array
     {
         $storage = $this->storageService->getStorageById($storageId);
 
         if (!$storage) {
             return [
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'Hatalı Depo Kodu lütfen kontrol ediniz.',
-                'storage' => null,
-                'product' => null,
+                'message' => 'Depo Bulunamadı.',
+                'data' => null,
             ];
         }
 
@@ -81,24 +80,27 @@ class StockService
             return [
                 'status' => Response::HTTP_NOT_FOUND,
                 'message' => 'Ürün Bulunamadı.',
-                'storage' => null,
-                'product' => null,
+                'data' => null
+            ];
+        }
+
+        $stockStorageProduct = $this->stockStorageProductRepository->findOneBy([
+            'storage' => $storage,
+            'product' => $product,
+        ]);
+
+        if (null === $stockStorageProduct) {
+            return [
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Ürün Depoda Mevcut Değil',
+                'data' => null
             ];
         }
 
         return [
             'status' => Response::HTTP_FOUND,
-            'message' => 'Ürün ve Depo mevcut',
-            'storage' => $storage,
-            'product' => $product,
+            'message' => 'Ürün Depoda Mevcut',
+            'data' => $stockStorageProduct,
         ];
-    }
-
-    public function getStockStorageProduct(Storage $storage, Product $product): ?StockStorageProduct
-    {
-        return $this->stockStorageProductRepository->findOneBy([
-            'storage' => $storage,
-            'product' => $product,
-        ]);
     }
 }

@@ -57,6 +57,7 @@ class StockService
                 'id' => $stockStorageProduct->getProduct()->getId(),
                 'name' => $stockStorageProduct->getProduct()->getName(),
                 'description' => $stockStorageProduct->getProduct()->getDescription(),
+                'status' => $stockStorageProduct->getProduct()->isStatus(),
             ],
             'quantity' => $stockStorageProduct->getQuantity(),
         ];

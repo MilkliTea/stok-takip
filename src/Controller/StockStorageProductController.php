@@ -113,9 +113,8 @@ class StockStorageProductController extends AbstractController
 
         $this->stockService->deleteStock($stockStorageProduct);
 
-        return new JsonResponse(
-            'Ürün Depodan Başarıyla Silindi.',
-            Response::HTTP_OK
-        );
+        return new JsonResponse([
+            'message' => 'Ürün Depodan Başarıyla Silindi.',
+        ], Response::HTTP_NOT_FOUND);
     }
 }
